@@ -1,21 +1,8 @@
 import "./App.css";
-import Clock from "./Clock";
+import CardList from "./components/CardList";
 
 function App() {
-  const user = {
-    first_name: "Devin",
-    last_name: "Li",
-  };
-  function format(user) {
-    return `${user.first_name} ${user.last_name}`;
-  }
-  const greet = <h1>{`Hello, ${format(user)}`}</h1>;
-  return (
-    <div className="App">
-      {greet}
-      <Clock />
-    </div>
-  );
+  return <CardList />;
 }
 
 export default App;
