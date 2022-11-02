@@ -8,36 +8,22 @@ const classes = {
   },
 };
 
-export default function CardList() {
-  const cards = [
-    "Obama",
-    "Amongus",
-    "The rock",
-    "John Cena",
-    "Obama",
-    "Amongus",
-    "The rock",
-    "John Cena",
-  ];
-
+export default function CardList(props) {
+  const { gameCards } = props;
   /*
 possible states:
 disabled: card can be clicked
 shown: card is shown
 cleared: card pair is matched and is disabled
 */
-
-  const INITIAL_STATE = new Array(cards.length).fill(false);
-  const [show, setShow] = useState(INITIAL_STATE);
+  const ALL_TRUE = new Array(gameCards.length).fill(true);
+  const ALL_FALSE = new Array(gameCards.length).fill(false);
+  const [show, setShow] = useState(ALL_FALSE);
   const [selected, setSelected] = useState([]);
-  const [disabled, setDisabled] = useState(INITIAL_STATE);
-  const [matched, setMatched] = useState(INITIAL_STATE);
+  const [disabled, setDisabled] = useState(ALL_FALSE);
+  const [matched, setMatched] = useState(ALL_FALSE);
 
   function hideAll() {
-    // const updatedShow = [...INITIAL_STATE];
-    // for (let i = 0; i < updatedShow.length; i++) {
-    //   if (cleared[i]) updatedShow[i] = true;
-    // }
     console.log(matched);
     // console.log(updatedShow)
 
@@ -62,7 +48,7 @@ cleared: card pair is matched and is disabled
   }
 
   function disableAll() {
-    const updatedArray = INITIAL_STATE.map((_) => true);
+    const updatedArray = new Array(gameCards.length).fill(true);
 
     setDisabled(updatedArray);
   }
@@ -84,9 +70,19 @@ cleared: card pair is matched and is disabled
     setMatched(updatedArray);
   }
 
+  // briefly show cards on load, then hide.
+  useEffect(() => {
+    setTimeout(() => {
+      setShow(ALL_TRUE);
+      setTimeout(() => {
+        setShow(ALL_FALSE);
+      }, 700);
+    }, 200);
+  }, []);
+
   useEffect(() => {
     if (selected.length >= 2) {
-      if (cards[selected[0]] === cards[selected[1]]) {
+      if (gameCards[selected[0]] === gameCards[selected[1]]) {
         handleMatch(selected[0], selected[1]);
       }
       setSelected([]);
@@ -101,7 +97,7 @@ cleared: card pair is matched and is disabled
 
   return (
     <div style={classes.cardGroup}>
-      {cards.map((card, idx) => {
+      {gameCards.map((card, idx) => {
         return (
           <Card
             key={`card-${idx}`}
