@@ -4,10 +4,10 @@ const classes = {
     width: "160px",
     height: "200px",
     backgroundColor: "gray",
-    border: "3px solid white",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    margin: "1rem",
   },
   cardContent: {
     fontSize: "1.5rem",
@@ -17,17 +17,19 @@ const classes = {
 export default function Card(props) {
   return (
     <div
-      style={classes.cardContainer}
+      style={{
+        outline: `${props.cleared ? "4px solid lime" : ""}`,
+        ...classes.cardContainer,
+      }}
       onClick={() => {
         if (props.disabled) return;
-        const currStatus = !props.show;
-        props.setShow(props.idx, currStatus);
+        props.select();
       }}
     >
       <div
         style={{
           ...classes.cardContent,
-          display: `${props.show ? "block" : "none"}`,
+          display: `${props.show || props.cleared ? "block" : "none"}`,
         }}
       >
         {props.value}

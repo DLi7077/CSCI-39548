@@ -20,34 +20,84 @@ export default function CardList() {
     "John Cena",
   ];
 
+  /*
+possible states:
+disabled: card can be clicked
+shown: card is shown
+cleared: card pair is matched and is disabled
+*/
+
   const INITIAL_STATE = new Array(cards.length).fill(false);
   const [show, setShow] = useState(INITIAL_STATE);
-  const [shownCount, setShownCount] = useState(0);
-  const [disable, setDisable] = useState(false);
+  const [selected, setSelected] = useState([]);
+  const [disabled, setDisabled] = useState(INITIAL_STATE);
+  const [matched, setMatched] = useState(INITIAL_STATE);
 
-  function resetCards() {
-    setShow(INITIAL_STATE);
+  function hideAll() {
+    // const updatedShow = [...INITIAL_STATE];
+    // for (let i = 0; i < updatedShow.length; i++) {
+    //   if (cleared[i]) updatedShow[i] = true;
+    // }
+    console.log(matched);
+    // console.log(updatedShow)
+
+    setShow(matched);
   }
 
-  function handleShow(idx, status) {
-    const updatedArray = [...show];
-    updatedArray[idx] = status;
-    if (status == true) {
-      setShownCount((p) => p + 1);
+  function disableCard(idx) {
+    const updatedDisable = [...disabled];
+    updatedDisable[idx] = true;
+
+    setDisabled(updatedDisable);
+  }
+
+  function handleSelect(idx) {
+    const updatedShow = [...show];
+    const updatedSelect = [...selected];
+    updatedSelect.push(idx);
+    updatedShow[idx] = true;
+    disableCard(idx);
+    setShow(updatedShow);
+    setSelected(updatedSelect);
+  }
+
+  function disableAll() {
+    const updatedArray = INITIAL_STATE.map((_) => true);
+
+    setDisabled(updatedArray);
+  }
+
+  function enableAll() {
+    const updatedArray = [...disabled];
+    for (let i = 0; i < updatedArray.length; i++) {
+      if (matched[i]) continue;
+      updatedArray[i] = false;
     }
-    setShow(updatedArray);
+    setDisabled(updatedArray);
+  }
+
+  function handleMatch(idx1, idx2) {
+    const updatedArray = [...matched];
+    updatedArray[idx1] = true;
+    updatedArray[idx2] = true;
+
+    setMatched(updatedArray);
   }
 
   useEffect(() => {
-    if (shownCount >= 2) {
-      setDisable(true);
+    if (selected.length >= 2) {
+      if (cards[selected[0]] === cards[selected[1]]) {
+        handleMatch(selected[0], selected[1]);
+      }
+      setSelected([]);
+      disableAll();
       setTimeout(() => {
-        setShownCount(0);
-        resetCards();
-        setDisable(false);
+        hideAll();
+        enableAll();
       }, 700);
     }
-  }, [shownCount]);
+    console.log(selected);
+  }, [selected]);
 
   return (
     <div style={classes.cardGroup}>
@@ -57,9 +107,13 @@ export default function CardList() {
             key={`card-${idx}`}
             idx={idx}
             value={card}
-            setShow={handleShow}
+            selected={selected}
+            select={() => {
+              handleSelect(idx);
+            }}
             show={show[idx]}
-            disabled={disable}
+            disabled={disabled[idx]}
+            cleared={matched[idx]}
           />
         );
       })}
