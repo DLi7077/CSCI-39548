@@ -1,8 +1,8 @@
 import React from "react";
 const classes = {
   cardContainer: {
-    width: "160px",
-    height: "200px",
+    width: "6rem",
+    height: "8rem",
     backgroundColor: "gray",
     display: "flex",
     justifyContent: "center",
@@ -30,6 +30,7 @@ export default function Card(props) {
         style={{
           ...classes.cardContent,
           display: `${props.show || props.cleared ? "block" : "none"}`,
+          fontSize: "2rem",
         }}
       >
         {props.value}

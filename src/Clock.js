@@ -3,25 +3,28 @@ import React from "react";
 class Clock extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { date: new Date() }; //state
+    this.state = { end: 0 }; //state
   }
 
   //repeat tick() when component mounted
   componentDidMount() {
-    this.timerID = setInterval(() => this.tick(), 1000);
+    this.timerID = setInterval(() => {
+      if (this.props.stop) return;
+      this.tick();
+    }, 1);
   }
 
   // reset timer
   tick() {
     this.setState({
-      date: new Date(),
+      end: this.state.end + 1,
     });
   }
 
   render() {
     return (
       <div>
-        <h2>{this.state.date.toLocaleTimeString()}</h2>
+        <h2>{this.state.end}ms</h2>
       </div>
     );
   }
