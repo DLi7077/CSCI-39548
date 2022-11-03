@@ -5,28 +5,28 @@ const classes = {
   cardGroup: {
     display: "flex",
     flexWrap: "wrap",
+    maxWidth: "1000px",
+    justifyContent: "center",
   },
 };
 
 export default function CardList(props) {
   const { gameCards } = props;
   /*
-possible states:
-disabled: card can be clicked
-shown: card is shown
-cleared: card pair is matched and is disabled
-*/
+  possible states:
+  disabled: card can be clicked
+  shown: card is shown
+  cleared: card pair is matched and is disabled
+  */
   const ALL_TRUE = new Array(gameCards.length).fill(true);
   const ALL_FALSE = new Array(gameCards.length).fill(false);
   const [show, setShow] = useState(ALL_FALSE);
   const [selected, setSelected] = useState([]);
   const [disabled, setDisabled] = useState(ALL_FALSE);
   const [matched, setMatched] = useState(ALL_FALSE);
+  let matchedCount = 0;
 
   function hideAll() {
-    console.log(matched);
-    // console.log(updatedShow)
-
     setShow(matched);
   }
 
@@ -67,7 +67,16 @@ cleared: card pair is matched and is disabled
     updatedArray[idx1] = true;
     updatedArray[idx2] = true;
 
+    matchedCount += 2;
+
     setMatched(updatedArray);
+    const gameOver = updatedArray.reduce((acc, curr) => {
+      return acc && curr;
+    }, true);
+    
+    if (gameOver) {
+      props.endGame();
+    }
   }
 
   // briefly show cards on load, then hide.
@@ -84,6 +93,11 @@ cleared: card pair is matched and is disabled
     if (selected.length >= 2) {
       if (gameCards[selected[0]] === gameCards[selected[1]]) {
         handleMatch(selected[0], selected[1]);
+        setSelected([]);
+        hideAll();
+        enableAll();
+
+        return;
       }
       setSelected([]);
       disableAll();
@@ -92,7 +106,6 @@ cleared: card pair is matched and is disabled
         enableAll();
       }, 700);
     }
-    console.log(selected);
   }, [selected]);
 
   return (
