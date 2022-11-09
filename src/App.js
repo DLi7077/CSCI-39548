@@ -1,16 +1,28 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import "./App.css";
 import CardList from "./components/CardList";
 import Clock from "./Clock";
 import Shuffle from "./shuffle";
 
 function App() {
-  const cards = [1, 2, 3];
-  const [ready, setReady] = useState(true);
-  const [gameEnd, setGameEnd] = useState(true);
+  const [cards, setCards] = useState([]);
+  const [ready, setReady] = useState(false);
+  const [gameEnd, setGameEnd] = useState(false);
+  const [cardCount, setCardCount] = useState(3);
 
-  const gameCards = Shuffle([...cards, ...cards]);
+  const [gameCards, setGameCards] = useState([]);
+
+  useEffect(() => {
+    setGameCards(Shuffle([...cards, ...cards]));
+  }, [cards]);
+
   const revealMS = 500;
+
+  function updateCardList() {
+    const newCardList = [...Array(parseInt(cardCount)).keys()];
+    setCards(newCardList);
+  }
+
   return (
     <div
       style={{
@@ -19,12 +31,23 @@ function App() {
         alignItems: "center",
       }}
     >
+      <div>
+        <input
+          type="number"
+          value={cardCount}
+          onChange={(e) => {
+            setCardCount(e.target.value);
+          }}
+        ></input>
+      </div>
       <button
         style={{ width: "fit-content" }}
         onClick={() => {
+          updateCardList();
           setReady(false);
           setTimeout(() => {
             setReady(true);
+            setGameEnd(false);
           }, revealMS);
         }}
       >
@@ -40,10 +63,13 @@ function App() {
         {ready && (
           <>
             <Clock stop={gameEnd} />
-            <CardList gameCards={gameCards} endGame={() => setGameEnd(true)} />
+            <CardList
+              gameCards={gameCards}
+              endGame={() => setGameEnd(true)}
+            />
           </>
         )}
-        {!ready && <h3> loading...</h3>}
+        {!ready && gameEnd && <h3> loading...</h3>}
       </div>
     </div>
   );
